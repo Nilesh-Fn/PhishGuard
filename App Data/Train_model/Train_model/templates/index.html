@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PhishGuard - Email Phishing Detector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Reset --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Card Container --- */
+        .card {
+            background-color: #fff;
+            width: 90%;
+            max-width: 700px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            font-size: 30px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* --- Textarea --- */
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            resize: none;
+            transition: 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #4facfe;
+            outline: none;
+            box-shadow: 0 0 10px rgba(79,172,254,0.5);
+        }
+
+        /* --- Button --- */
+        input[type="submit"] {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* --- Prediction Display --- */
+        .prediction {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 15px;
+            border-radius: 12px;
+            color: #fff;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .prediction.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .phishing {
+            background: linear-gradient(135deg, #ff4e50, #f9d423);
+        }
+
+        .legitimate {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+        }
+
+        /* --- Confidence Bar --- */
+        .confidence-container {
+            position: relative;
+            background-color: #e0e0e0;
+            border-radius: 12px;
+            height: 25px;
+            width: 100%;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .confidence-bar {
+            height: 100%;
+            background-color: #4facfe;
+            border-radius: 12px;
+            width: 0;
+            transition: width 1s ease-in-out;
+        }
+
+        .confidence-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            line-height: 25px;
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>PhishGuard - Email Phishing Detector</h1>
+
+        <form method="POST" action="/predict">
+            <textarea name="email" rows="10" placeholder="Paste your email here">{{ email|default('') }}</textarea>
+            <input type="submit" value="Check Email">
+        </form>
+
+        {% if prediction %}
+        <div class="prediction {{ color_class }}">
+            {{ prediction }}
+        </div>
+
+        {% if confidence %}
+        <div class="confidence-container">
+            <div class="confidence-bar" data-confidence="{{ confidence }}"></div>
+            <span class="confidence-text">{{ confidence }}% confident</span>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <script>
+        // Animate prediction and confidence bar
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const predictionDiv = document.querySelector('.prediction');
+            const confidenceBar = document.querySelector('.confidence-bar');
+
+            if (predictionDiv) {
+                // Show prediction with fade-in
+                setTimeout(() => {
+                    predictionDiv.classList.add('show');
+                }, 200);
+
+                // Animate confidence bar
+                if (confidenceBar) {
+                    const width = confidenceBar.getAttribute('data-confidence');
+                    confidenceBar.style.width = width + '%';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
